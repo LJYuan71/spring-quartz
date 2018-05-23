@@ -1,0 +1,46 @@
+package tk.ljyuan71.support;
+
+import java.io.Serializable;
+/**
+ * 返回数据封装
+ */
+public class RetObj implements Serializable{
+	private static final long serialVersionUID = 4600407939863664791L;
+	
+	private boolean flag = true;
+	private String msg;
+	private Object obj;
+	public boolean isFlag() {
+		return flag;
+	}
+	public void setFlag(boolean flag) {
+		this.flag = flag;
+	}
+	public String getMsg() {
+		return msg;
+	}
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
+	public Object getObj() {
+		return obj;
+	}
+	public void setObj(Object obj) {
+		this.obj = obj;
+	}
+	public RetObj() {
+
+	}
+	public RetObj(boolean flag, String msg, Object obj) {
+		super();
+		this.flag = flag;
+		this.msg = msg;
+		this.obj = obj;
+	}
+	public RetObj(boolean flag, String msg) {
+		super();
+		this.flag = flag;
+		this.msg = msg;
+	}
+	
+}

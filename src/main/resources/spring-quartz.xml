@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        					http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
+        					http://www.springframework.org/schema/tx 
+        					http://www.springframework.org/schema/tx/spring-tx-4.0.xsd 
+        					http://www.springframework.org/schema/jee 
+        					http://www.springframework.org/schema/jee/spring-jee-4.0.xsd 
+        					http://www.springframework.org/schema/context 
+        					http://www.springframework.org/schema/context/spring-context-4.0.xsd
+                            http://www.springframework.org/schema/aop
+                            http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+                            http://www.springframework.org/schema/tx
+                            http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+                            
+     <!-- 
+        Spring整合Quartz进行配置遵循下面的步骤：
+        1：定义工作任务的Job
+        2：定义触发器Trigger，并将触发器与工作任务绑定
+        3：定义调度器，并将Trigger注册到Scheduler
+     -->
+     <!-- 3：定义调度器，并将Trigger注册到Scheduler -->
+    <bean lazy-init="false" id="schedulerFactoryBean3" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"> 
+		<property name="triggers"> 
+		<list> 
+			<!-- 这里添加多个定时任务触发器，对应第2步的bean id --> 
+			<ref bean="taskRAMSayTrigger" /> 
+			<ref bean="taskRAMFightTrigger" />
+			<ref bean="taskRAMEatTrigger" />
+		</list> 
+		</property> 
+	</bean> 
+    
+    <!-- 1：定义工作任务的Job 开始 -->
+	<bean id="taskRAMSay" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"> 
+		<property name="targetObject"> 
+			<!--指定要定时执行的方法所在类，将定时任务定义成bean--> 
+			<ref bean="taskRAMTest1" /> 
+		</property> 
+		<property name="targetMethod"> 
+			<!--指定定时执行的方法--> 
+			<value>say</value> 
+		</property> 
+		<property name="concurrent"> 
+			<!--指定目标封装为有状态的任务，有状态的任务不能并发执行，无状态的任务可并发执行--> 
+			<!--false表示等上一个任务执行完后再开启新的任务-->
+			<value>false</value> 
+		</property> 
+	</bean> 
+	
+	<bean id="taskRAMFight" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"> 
+		<property name="targetObject"> 
+			<!--指定要定时执行的方法所在类，将定时任务定义成bean--> 
+			<ref bean="taskRAMTest1" /> 
+		</property> 
+		<property name="targetMethod"> 
+			<!--指定定时执行的方法--> 
+			<value>fight</value> 
+		</property> 
+		<property name="concurrent"> 
+			<!--指定目标封装为有状态的任务，有状态的任务不能并发执行，无状态的任务可并发执行--> 
+			<!--false表示等上一个任务执行完后再开启新的任务-->
+			<value>true</value> 
+		</property> 
+	</bean> 
+	
+	<bean id="taskRAMEat" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"> 
+		<property name="targetObject"> 
+			<!--指定要定时执行的方法所在类，将定时任务定义成bean--> 
+			<ref bean="taskRAMTest2" /> 
+		</property> 
+		<property name="targetMethod"> 
+			<!--指定定时执行的方法--> 
+			<value>eat</value> 
+		</property> 
+		<property name="concurrent"> 
+			<!--指定目标封装为有状态的任务，有状态的任务不能并发执行，无状态的任务可并发执行--> 
+			<!--false表示等上一个任务执行完后再开启新的任务-->
+			<value>true</value> 
+		</property> 
+	</bean> 
+	<!-- job 结束 -->
+	
+	<!-- 2：定义触发器的bean，定义一个Cron的Trigger，一个触发器只能和一个任务进行绑定  开始 -->
+	<bean id="taskRAMSayTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"> 
+        <!-- 指定Trigger的名称 -->
+        <property name="name" value="taskRAMSay"/>
+        <!-- 指定Trigger的名称 -->
+        <property name="group" value="taskRAMSay_group"/>
+        <!-- 指定Tirgger绑定的Job -->
+        <property name="jobDetail" ref="taskRAMSay"/>
+        <!-- 指定Cron 的表达式 ，当前是每隔3s运行一次 -->
+        <property name="cronExpression" value="0/3 * * * * ?" />
+    </bean>
+    
+    <bean id="taskRAMFightTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"> 
+        <!-- 指定Trigger的名称 -->
+        <property name="name" value="taskRAMFight"/>
+        <!-- 指定Trigger的名称 -->
+        <property name="group" value="taskRAMFight_group"/>
+        <!-- 指定Tirgger绑定的Job -->
+        <property name="jobDetail" ref="taskRAMFight"/>
+        <!-- 指定Cron 的表达式 ，当前是每隔10s运行一次 -->
+        <property name="cronExpression" value="0/10 * * * * ?" />
+    </bean>
+    
+    <bean id="taskRAMEatTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"> 
+        <!-- 指定Trigger的名称 -->
+        <property name="name" value="taskRAMEat"/>
+        <!-- 指定Trigger的名称 -->
+        <property name="group" value="taskRAMEat_group"/>
+        <!-- 指定Tirgger绑定的Job -->
+        <property name="jobDetail" ref="taskRAMEat"/>
+        <!-- 指定Cron 的表达式 ，当前是每隔1s运行一次 -->
+        <property name="cronExpression" value="0/4 * * * * ?" />
+    </bean>
+    <!-- trigger结束 -->
+	
+</beans>
